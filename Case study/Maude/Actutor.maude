@@ -1,1 +1,26 @@
+--- % --------------------------------------------------------------------------------------------------------------
+--- % 
+--- % --------------------------------------------------------------------------------------------------------------
+mod A is
+  pr GNETS-SEMANTICS .
 
+  ops p1 p2    : -> NP  .
+  ops on off   : -> GP  .   
+  op st        : -> Var .       
+  ops On Off   : -> MethodName     .
+  op A         : -> GNetName       .            
+  ops t1 t2     : -> TransitionName .
+
+  eq Gsp(A) = { [ (On :{[noAtt](p1)(on)}) ; (Off :{[noAtt](p2)(off)}) ]  
+                  < A : GNet | places: < p1  | action: noAction >
+                                       < p2  | action: noAction >
+                                       < on  | action: noAction >
+                                       < off | action: noAction > , 
+                          transitions: < t1  | input:  (p1 if true)  , 
+                                               output: (on ins:  st ) , 
+                                               action: st := "On"  >
+                                       < t2  | input:  (p2 if true)  , 
+                                               output: (off ins:  st  ) , 
+                                               action: st := "Off" >                                  
+                  > } .
+endm
