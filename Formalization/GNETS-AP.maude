@@ -1,1 +1,71 @@
+--- % --------------------------------------------------------------------------------------------
+--- % The GNETS-AP module 
+--- % --------------------------------------------------------------------------------------------
+fmod GNETS-AP is
+  including GNETS-EXP-SYNTAX .
 
+  op Ap : Op Value Value -> Value . 
+  op Ap : ROp Value Value -> Bool . 
+  op Ap : BOp Bool Bool -> Bool .    
+  vars bv bv' : Bool .
+
+  --- % -----------------------------------------------------------
+  --- % INt & NAt -------------------------------------------------
+  --- % -----------------------------------------------------------
+  eq Ap(.+,v:Int,v':Int)    = v:Int + v':Int   . 
+  eq Ap(.*,v:Int,v':Int)    = v:Int * v':Int   .
+  eq Ap(.-,v:Int,v':Int)    = v:Int - v':Int   .
+  eq Ap(.rem,v:Int,v':Int)  = v:Int rem v':Int .
+  eq Ap(./,v:Rat,v':Rat)    = v:Rat / v':Rat   .
+  --- % -----------------------------------------------------------
+  eq Ap(.<,v:Int,v':Int)    = v:Int < v':Int  .
+  eq Ap(.>,v:Int,v':Int)    = v:Int > v':Int  .
+  eq Ap(.<=,v:Int,v':Int)   = v:Int <= v':Int .
+  eq Ap(.>=,v:Int,v':Int)   = v:Int >= v':Int .
+
+  --- % -----------------------------------------------------------
+  --- % FLoat -----------------------------------------------------
+  --- % -----------------------------------------------------------
+  eq Ap(.+,v:FLoat,v':FLoat)    = v:FLoat +F v':FLoat  . 
+  eq Ap(.*,v:FLoat,v':FLoat)    = v:FLoat *F v':FLoat  .
+  eq Ap(.-,v:FLoat,v':FLoat)    = v:FLoat -F v':FLoat   .
+  eq Ap(.rem,v:FLoat,v':FLoat)  = v:FLoat remF v':FLoat  .
+  eq Ap(./,v:FLoat,v':FLoat)    = v:FLoat /F v':FLoat .
+  --- %------------------------------------------------------------
+  eq Ap(.<,v:FLoat,v':FLoat)    = v:FLoat <F v':FLoat  .
+  eq Ap(.>,v:FLoat,v':FLoat)    = v:FLoat >F v':FLoat  .
+  eq Ap(.<=,v:FLoat,v':FLoat)   = v:FLoat <=F v':FLoat .
+  eq Ap(.>=,v:FLoat,v':FLoat)   = v:FLoat >=F v':FLoat .
+
+  --- % -----------------------------------------------------------
+  --- % String ----------------------------------------------------
+  --- % -----------------------------------------------------------
+  eq Ap(.+,v:STring,v':STring)  = v:STring ++ v':STring   . 
+  --- % -----------------------------------------------------------
+  eq Ap(.<,v:STring,v':STring)  = v:STring ltt v':STring  . 
+  eq Ap(.>,v:STring,v':STring)  = v:STring gtt v':STring  .
+  eq Ap(.<=,v:STring,v':STring) = v:STring leq v':STring  .
+  eq Ap(.>=,v:STring,v':STring) = v:STring geq v':STring  .
+
+  --- % -----------------------------------------------------------
+  --- % All data types --------------------------------------------
+  --- % -----------------------------------------------------------
+  eq Ap(.=,v:Value,v':Value)   = v:Value ==  v':Value .
+  eq Ap(.!=,v:Value,v':Value)  = v:Value =/= v':Value .
+
+  --- % -----------------------------------------------------------
+  --- % Bool ------------------------------------------------------
+  --- % -----------------------------------------------------------
+  eq Ap(And,bv,bv') = bv and bv' .
+  eq Ap(Or,bv,bv')  = bv or bv'  .
+  
+  --- % -----------------------------------------------------------
+  --- % Conversion RAt2FLoat .
+  --- % -----------------------------------------------------------
+  var o : Op . var ro : ROp .
+  eq Ap(o,v:Rat,v':FLoat)  = Ap(o,float(v:Rat),v':FLoat)  .
+  eq Ap(o,v:FLoat,v':Rat)  = Ap(o,v:FLoat,float(v':Rat))  .
+  eq Ap(ro,v:Rat,v':FLoat) = Ap(ro,float(v:Rat),v':FLoat) .
+  eq Ap(ro,v:FLoat,v':Rat) = Ap(ro,v:FLoat,float(v':Rat)) . 
+
+endfm
