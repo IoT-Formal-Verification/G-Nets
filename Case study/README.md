@@ -1,5 +1,6 @@
 # Home-camera system
 Description ... ...
+![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/467c48121648f2f470a2831503a5c7a9355744bc/Case%20study/images/Home-camera%20system.jpeg)
 ## Actuator
 ![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/da8e440cf866ef894bf5353d661b93fa1227b51c/Case%20study/G-Nets%20specifications/Actuator.jpeg)
 ## Camera (sensor)
