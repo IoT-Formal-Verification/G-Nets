@@ -1,1 +1,175 @@
+--- % -------------------------------------------------------------------------------------------
+--- % The GNETS-SEMANTICS module 
+--- % -------------------------------------------------------------------------------------------
 
+mod GNETS-SEMANTICS is
+   pr GNETS-ACTION-SEMANTICS .
+
+   --- Returns the list of GNet transitions (from a GSP)
+   op Trans`(_`) : GSP -> Configuration .
+   eq Trans ( {[meth:MethodList] < g:GNetName : GNet | places:   pl:Configuration ,
+                                                  transitions:   tl:Configuration  >}
+             )   =  tl:Configuration .
+
+   --- Transform the liste of transitions into new form 
+   op Transform`(_`) : Configuration -> TransitionList . 
+   eq Transform(< t:TransitionName | input: al:ArcList , output: al':ArcList , action: act:Action > ) = 
+                                                      Place(al:ArcList) 
+                                                               --> [t:TransitionName] --> 
+                                                      Place(al':ArcList) 
+                                                                if Condition(al:ArcList) 
+                                                                action: act:Action     .
+
+   eq Transform(< t:TransitionName | input: al:ArcList , output: al':ArcList , action: act:Action > tl:Configuration ) = 
+                                                  (   Place(al:ArcList) 
+                                                              --> [t:TransitionName] --> 
+                                                      Place(al':ArcList) 
+                                                                if Condition(al:ArcList)
+                                                                action: act:Action         ), 
+                                                      Transform (tl:Configuration) [owise]             .
+
+   --- Returns a list of places 
+   op Place`(_`) : ArcList -> PlaceList .
+   eq Place(p:PlaceName if cond:BExp)                = p:PlaceName .
+   eq Place(p:PlaceName if cond:BExp ins: I:VarList) = p:PlaceName .
+   eq Place(p:PlaceName ins: i:VarList)              = p:PlaceName . 
+   eq Place(arc:Arc ; al:ArcList)                    = Place(arc:Arc) , Place (al:ArcList) [owise] .
+
+   --- Returns a condition 
+   op Condition`(_`) : ArcList -> BExp .
+   eq Condition(p:PlaceName if cond:BExp)                = cond:BExp .
+   eq Condition(p:PlaceName if cond:BExp ins: i:VarList) = cond:BExp .
+   eq Condition(p:PlaceName ins: i:VarList)              = true .
+   eq Condition(arc:Arc ; al:ArcList)                    = (Condition(arc:Arc)) And (Condition (al:ArcList)) [owise] .
+
+   --- Return a list of marking places
+   op MarkingPlaces`(_`) : Marking ->  PlaceList .
+   eq MarkingPlaces(< p:PlaceName , to:Token >) = p:PlaceName .
+   eq MarkingPlaces(m:Marking m':Marking) = MarkingPlaces(m:Marking) , MarkingPlaces(m':Marking) [owise] .
+
+   --- Check whether the SColor for all tokens in a marking's places is in the "After" state.
+   op After`(_`) : Marking -> Bool .
+   eq After (< p:PlaceName , token (seq:SeqList, after  ,ms:MsgSet) >)           = true .
+   eq After (< p:PlaceName , token (seq:SeqList, before ,ms:MsgSet) > m:Marking) = false .
+   eq After (< p:PlaceName , token (seq:SeqList, after  ,ms:MsgSet) > m:Marking) = After (m:Marking) [owise] .
+
+   --- Returns the actions of a place 
+   op Act `(_,_`) :  GSP PlaceName -> Action .
+   eq Act({[meth:MethodList] < g:GNetName : GNet | places: < p:PlaceName | action: act:Action > pl:Configuration , 
+                                                   transitions: tl:Configuration >} , p:PlaceName ) 
+                             = act:Action .
+   eq Act({[meth:MethodList] < g:GNetName : GNet | places: < p:ISP(g':GNetName , m:MethodName) | action: act:Action > pl:Configuration , 
+                                                   transitions: tl:Configuration >} , p:ISP ) 
+                             = act:Action .
+
+   --- Returns the transition ouput arcs from a GNet presented by a Object 
+   op OutPutArcs`(_,_`) : TransitionName GSP -> ArcList .
+   eq OutPutArcs ( t:TransitionName , {[meth:MethodList] < g:GNetName : GNet | places:   pl:Configuration ,
+                                            transitions: < t:TransitionName | input: al:ArcList , 
+                                                                              output: al':ArcList ,
+                                                                              action: act:Action > tl:Configuration  >} )
+                             =  al':ArcList .
+
+   --- Returns
+   op NewMarking`(_,_,_`) : ArcList Marking Action ->  Marking .
+   op NewMarking`(_,_`) : PlaceList Token ->  Marking .
+   eq NewMarking(p:PlaceName if cond:BExp  , m:Marking , act:Action ) 
+                        = < p:PlaceName, token ( SeqMarking(m:Marking), before,em ) > .
+   eq NewMarking(p:PlaceName if cond:BExp ins: i:VarList , (m:Marking < p':PlaceName , token (seq:SeqList, after ,ms:MsgSet) >) , act:Action ) 
+              = < p:PlaceName, token ( SeqMarking(m:Marking < p':PlaceName , token (seq:SeqList, after ,ms:MsgSet) > ), 
+                                       before, i:VarList{< act:Action , ms:MsgSet ; MsgMarking(m:Marking) >}) > .
+   eq NewMarking(p:PlaceName ins: i:VarList    , (m:Marking < p':PlaceName , token (seq:SeqList, after ,ms:MsgSet) >) , act:Action ) 
+                = < p:PlaceName, token ( SeqMarking(m:Marking < p':PlaceName , token (seq:SeqList, after ,ms:MsgSet) >), 
+                                         before, i:VarList{< act:Action , ms:MsgSet ; MsgMarking(m:Marking) >}) > . 
+   eq NewMarking((arc:Arc ; al:ArcList) , m:Marking , act:Action )  
+                = NewMarking(arc:Arc, m:Marking , act:Action ) NewMarking (al:ArcList,m:Marking , act:Action) [owise] .
+   eq NewMarking(p:PlaceName , to:Token)          
+                = < p:PlaceName, to:Token > .
+   eq NewMarking((p:PlaceName , lp:PlaceList) , to:Token )  
+                = < p:PlaceName, to:Token > NewMarking (lp:PlaceList , to:Token) [owise] . 
+
+   --- Comment
+   op Invoked(_,_) : ISP GSP -> ResultInvoked .
+   eq Invoked (p:ISP , {[meth:MethodList] < g:GNetName : GNet | 
+                          places:  < p:ISP ( g':GNetName , mt:MethodName ) | action: act:Action > pl:Configuration ,
+                         transitions: tl:Configuration  >} ) 
+                  = (g':GNetName , mt:MethodName) .
+
+    --- comment
+    op method`(_,_`) : MethodName GSP -> Method .
+    eq method(mt:MethodName , {[ ( mt:MethodName : {[xl:VarList] (lp:PlaceList) (lp':PlaceList)} ) ; (meth:MethodList)] C:Configuration } ) 
+              = mt:MethodName :{[ xl:VarList](lp:PlaceList)(lp':PlaceList)} .
+
+    ---- Returns the marking token
+    op SeqMarking`(_`) : Marking ->  SeqList .
+    eq SeqMarking(< p:PlaceName , token ( seq:Seq-Omega, SC:SColor ,ms:MsgSet) > 
+                   < p':PlaceName , token (seq':NSeqList, SC':SColor ,ms':MsgSet) > m:Marking) 
+                   = Omega[seq':NSeqList] .
+    eq SeqMarking(< p:PlaceName , token (seq:SeqList, SC:SColor ,ms:MsgSet) > m:Marking)  = seq:SeqList [owise] .
+
+    --- Returns the messages of a marking-------------------------------------------------------------------------
+    op MsgMarking`(_`) : Marking ->  MsgSet .
+    eq MsgMarking (empty) = em .
+    eq MsgMarking(< p:PlaceName , token (seq:SeqList, after ,ms:MsgSet) >) = ms:MsgSet .
+    eq MsgMarking(m:Marking m':Marking) = MsgMarking(m:Marking) ; MsgMarking(m':Marking) [owise] .
+
+    --- Compare a sequece
+    op Compare-Seq`(_,_`) : SeqList Marking -> Bool .
+    eq Compare-Seq (seq-om:Seq-Omega , < p:PlaceName , token (seq:SeqList, sc:SColor  ,ms:MsgSet) >)        = true .
+    eq Compare-Seq (seq:SeqList , < p:PlaceName , token (seq-om:Seq-Omega, sc:SColor  ,ms:MsgSet) >)        = true .
+
+    eq Compare-Seq (seq:SeqList , < p:PlaceName , token (seq:SeqList, sc:SColor  ,ms:MsgSet) >)           = true .
+    eq Compare-Seq (seq:SeqList , < p:PlaceName , token (seq:SeqList, sc:SColor  ,ms:MsgSet) > m:Marking) = Compare-Seq (seq:SeqList , m:Marking) .
+    eq Compare-Seq (seq:SeqList , m:Marking)                                                              = false [owise] .
+ 
+    ---( The result is the right-hand side of one of the transitions, 
+         where the transitions have the list of marking places as their left-hand side. )
+    --- Check if there is a transition for a list of marking places that verify the condition in the messages
+    --- the list is on the left side of a transition (Returns a Boolean) ( ArcList Action Bool )
+
+    op Right-hand`(_,_,_`) : GNetName Marking TransitionList -> ResultCheck .
+    crl [right-hand-rule] :  Right-hand(g:GNetName , m:Marking , (lt:TransitionList , (lp:PlaceList --> [t:TransitionName]
+                                                                 --> lp':PlaceList if cond:BExp action: act:Action ) )) 
+                           =>  (al:ArcList , act:Action)
+                           if  MarkingPlaces(m:Marking)                        => lp:PlaceList
+                           /\  OutPutArcs(t:TransitionName , Gsp(g:GNetName))  => al:ArcList
+                           /\  < cond:BExp , MsgMarking (m:Marking) >          => true . 
+
+    crl [trans-r1] : g:GNetName | m:Marking < p:NP , token (seq:SeqList, after ,ms:MsgSet) > m':Marking 
+                =>   g:GNetName | NewMarking(al:ArcList , (m:Marking < p:NP , token (seq:SeqList, after ,ms:MsgSet) >) , act:Action ) m':Marking 
+                if   After(m:Marking < p:NP , token (seq:SeqList, after ,ms:MsgSet) >)
+                /\   Right-hand( g:GNetName, m:Marking < p:NP , token (seq:SeqList, after ,ms:MsgSet) > , Transform(Trans(Gsp(g:GNetName)))) 
+                     => (al:ArcList , act:Action) 
+                /\   Compare-Seq (seq:SeqList , m:Marking < p:NP , token (seq:SeqList, after ,ms:MsgSet) > ) . 
+
+    crl [trans-r2] : g:GNetName | m:Marking < p:ISP , token (seq:SeqList, after ,ms:MsgSet) > m':Marking 
+                =>   g:GNetName | NewMarking(al:ArcList , (m:Marking < p:ISP , token (seq:SeqList, after ,ms:MsgSet) >) , act:Action ) m':Marking 
+                if   After(m:Marking < p:ISP , token (seq:SeqList, after ,ms:MsgSet) >)
+                /\   Right-hand( g:GNetName, m:Marking < p:ISP , token (seq:SeqList, after ,ms:MsgSet) > , Transform(Trans(Gsp(g:GNetName))))
+                     => (al:ArcList , act:Action) 
+                /\  Compare-Seq (seq:SeqList , m:Marking < p:ISP , token (seq:SeqList, after ,ms:MsgSet) > ) . 
+
+    crl [after-r1] : g:GNetName | m:Marking < p:NP , token (seq:SeqList, before ,ms:MsgSet ) >  
+                =>   g:GNetName | m:Marking < p:NP , token (seq:SeqList, after  ,ms':MsgSet) > 
+                if   < Act(Gsp(g:GNetName), p:NP ), ms:MsgSet > => ms':MsgSet . 
+
+    crl [after-r2] : g:GNetName | m:Marking < p:GP , token (seq:SeqList, before ,ms:MsgSet) >  
+                =>   g:GNetName | m:Marking < p:GP , token (seq:SeqList, after ,ms':MsgSet) > 
+                if   < Act(Gsp(g:GNetName),p:GP), ms:MsgSet > => ms':MsgSet . 
+
+    crl [isp-rule] : g:GNetName | m:Marking < p:ISP , token (seq:SeqList, before ,ms:MsgSet) >  
+                =>  (g:GNetName | m:Marking) (g':GNetName | NewMarking ( pl:PlaceList , 
+                     token ( (g:GNetName , p:ISP) seq:SeqList, before , (xl:VarList){ms:MsgSet}))) 
+                if   Invoked(p:ISP , Gsp(g:GNetName) ) => (g':GNetName , mt:MethodName) 
+                /\   method(mt:MethodName , Gsp(g':GNetName)) => mt:MethodName :{[xl:VarList](pl:PlaceList)(pl':PlaceList)} .
+
+    rl [retun-isp] : g:GNetName | m:Marking < p:GP , token ( (g':GNetName , p':ISP) seq:SeqList , after , ms:MsgSet) >  
+                =>  (g:GNetName | m:Marking) ( g':GNetName | < p':ISP , token (seq:SeqList , after , ms:MsgSet)      > ) .
+
+    rl [retun-isp2] : g:GNetName | m:Marking < p:GP , token ( Omega[(g':GNetName , p':ISP) seq:NSeqList] , after , ms:MsgSet) >  
+                =>  (g:GNetName | m:Marking) ( g':GNetName | < p':ISP , token (seq:NSeqList , after , ms:MsgSet)      > ) .
+ 
+    rl [empty-rule]  :   g:GNetName | empty  => none-config  .
+    rl [fusion-rule] : ( g:GNetName | m:Marking ) ( g:GNetName | m':Marking )  => ( g:GNetName | m:Marking m':Marking ) .
+
+endm 
