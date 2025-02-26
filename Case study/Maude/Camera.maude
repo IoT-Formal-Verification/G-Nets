@@ -1,1 +1,40 @@
+--- % --------------------------------------------------------------------------------------------------------------
+--- % 
+--- % --------------------------------------------------------------------------------------------------------------
+mod C is
+  pr CS .
+  pr A .
+  
+  ops sense evaluate : -> NP  .
+  ops endSense       : -> GP  .
+  ops isp1 isp2 isp3 : -> ISP .   
+  ops v r            : -> Var .       
+  ops Sense          : -> MethodName .
+  op C               : -> GNetName   .            
+  ops t3 t4 t5 t6 t7 : -> TransitionName .
 
+  eq Gsp(C) = { [ (Sense :{[noAtt](sense)(endSense)}) ]  
+                  < C : GNet | places: < sense              | action: noAction >
+                                       < evaluate           | action: noAction >
+                                       < isp1 (A , On )     | action: noAction >
+                                       < isp2 (Cs , Notif ) | action: noAction >
+                                       < isp3 (Cs , Save )  | action: noAction >
+                                       < endSense           | action: noAction > , 
+                          transitions: < t3 | input:  (sense if true)  , 
+                                              output: (evaluate ins: v ) , 
+                                              action: v  := "Video"  >
+                                       < t4 | input:  (evaluate if true)  , 
+                                              output: (isp1 ins: noAtt ) ; (isp2 ins: (v , r)) , 
+                                              action: r := "notif"  >
+                                       < t5 | input:  (evaluate if true)  , 
+                                              output: (isp3 ins: v ) , 
+                                              action: noAction  >
+                                       < t6 | input:  (isp1 if true) ; (isp2 if true)  , 
+                                              output: (endSense ins: (v , r)) , 
+                                              action: noAction  >
+                                       < t7 | input:  (isp3 if true)  , 
+                                              output: (endSense ins: v)  , 
+                                              action: noAction  >                                  
+                  > } .
+
+endm
