@@ -7,3 +7,4 @@ Description ... ...
 ## User (Android app)
 ![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/72f319f3efe534b3ecc85d13df76a461896ddd1d/Case%20study/G-Nets%20specifications/User.jpeg)
 ## Cloud service
+![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/adf63d4bcc5a918c100ab873feadcd927e238d8d/Case%20study/G-Nets%20specifications/Cloud%20service.jpeg)
