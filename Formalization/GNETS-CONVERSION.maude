@@ -1,1 +1,38 @@
+--- % --------------------------------------------------------------------------------------------
+--- % The GNETS-CONVERSION module
+--- % -------------------------------------------------------------------------------------------- 
+fmod GNETS-CONVERSION is
+   pr CONVERSION
+            * (--- Renamings in FLOAT
+                sort Float to FLoat ,
+                sort String to STring ,
+                sort Char to CHar , sort FindResult to FIndResult ,
+                op abs   : Float -> Float to absF ,
+                op notFound : -> FindResult to NotFound , 
+                op char : Nat ~> Char to CHar , 
+                op -_    : Float -> Float  to -F_,
+                op _+_   : Float Float -> Float to _+F_,
+                op _-_   : Float Float -> Float to _-F_,
+                op _/_   : Float Float -> Float to _/F_,
+                op _*_   : Float Float -> Float to _*F_,
 
+                op min   : Float Float -> Float to minF,
+                op max   : Float Float -> Float to maxF,
+                op _rem_ : Float Float -> Float to _remF_,
+                op _^_   : Float Float -> Float to _^F_,
+                op _<_   : Float Float -> Bool  to _<F_,
+                op _<=_  : Float Float -> Bool  to _<=F_,
+                op _>_   : Float Float -> Bool  to _>F_,
+                op _>=_  : Float Float -> Bool  to _>=F_,
+                op floor : Float -> Float to floorF,
+                op ceiling : Float -> Float to ceilingF,
+
+                --- Renamings in STRING
+                op _<_  : String String -> Bool to _ltt_,
+                op _<=_ : String String -> Bool to _leq_,
+                op _>_  : String String -> Bool to _gtt_,
+                op _>=_ : String String -> Bool to _geq_,
+                op _+_  : String String -> String to _++_,  
+                op float : String ~> Float to string2float ) .
+
+endfm
