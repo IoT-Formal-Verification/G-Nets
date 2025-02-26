@@ -1,1 +1,50 @@
+--- % --------------------------------------------------------------------------------------------------------------
+--- % 
+--- % --------------------------------------------------------------------------------------------------------------
+mod CS is
+  pr GNETS-SEMANTICS .
 
+  ops check logout disp save notif snotif monitor   : -> NP  .
+  ops conn disconn dispOp saveVideo saveNotif showNotif showvideo   : -> GP  .   
+  ops i c r v : -> Var .       
+  ops Login Logout DispOp Save Notif  SNotif Monitor : -> MethodName     .
+  op  Cs         : -> GNetName       .            
+  ops t20 t21 t22 t23 t24 t25 t26 t27                : -> TransitionName .
+
+  eq Gsp(Cs) = { [ (Login :{[i](check)(conn)})       ; (Logout :{[noAtt](logout)(disconn)})       ;
+                   (DispOp :{[noAtt](disp)(dispOp)})   ; (Save :{[v](save)(saveVideo)})             ;
+                   (Notif :{[v , r ](notif)(saveNotif)}) ; (SNotif :{[noAtt](snotif)(showNotif)}) ;
+                   (Monitor :{[noAtt](monitor)(showvideo)}) ]  
+                 < Cs : GNet | places: < check   | action: (i ++ )  > < conn         | action: noAction >
+                                       < logout  | action: noAction > < disconn      | action: noAction >
+                                       < disp    | action: noAction > < dispOp      | action: noAction >
+                                       < save    | action: noAction > < saveVideo    | action: noAction >
+                                       < notif   | action: noAction > < saveNotif     | action: noAction >
+                                       < snotif | action: noAction > < showNotif | action: noAction >
+                                       < monitor | action: noAction > < showvideo    | action: noAction > , 
+                          transitions: < t20 | input:  (check if true)  , 
+                                               output: (conn ins: (i , c)) , 
+                                               action: (c := "true" )  >
+                                       < t21 | input:  (check if true)  , 
+                                               output: (conn ins: (i , c)) , 
+                                               action: (c := "false" )  >
+                                       < t22 | input:  (logout if true)  , 
+                                               output: (disconn ins: c) , 
+                                               action: (c := "false" )  > 
+                                       < t23 | input:  (disp if true)  , 
+                                               output: (dispOp ins: noAtt) , 
+                                               action: noAction  > 
+                                       < t24 | input:  (save if true)  , 
+                                               output: (saveVideo ins: v) , 
+                                               action: noAction  >
+                                       < t25 | input:  (notif if true)  , 
+                                               output: (saveNotif ins: (v , r)) , 
+                                               action: noAction  >
+                                       < t26 | input:  (snotif if true)  , 
+                                               output: (showNotif ins: (v , r)) , 
+                                               action: (v := "video" ; r := "notification")  >
+                                       < t27 | input:  (monitor if true)  , 
+                                               output: (showvideo ins: v) , 
+                                               action: ( v := "video" )  >                               
+                  > } .
+endm 
