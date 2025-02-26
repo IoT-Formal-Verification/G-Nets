@@ -1,1 +1,22 @@
+mod HOME-CAMERA-PREDS is
+inc U .
+inc C .
+inc SATISFACTION .
+inc MODEL-CHECKER .
+subsort Config < State .
 
+--- Predicates declaration
+--- The predicates of user behavior
+ops Disconnected Failed : GNetName ->  Prop .
+eq U | < failed     , t:Token > |= Disconnected(U) = true .
+eq U | < disconnect , t:Token > |= Failed(U)       = true .
+
+--- The predicate of camera behavior
+op EndSense : GNetName -> Prop .
+eq C | < endSense , t:Token > |= EndSense(C)   = true .
+
+ops Behavior`(_`) : GNetName -> Config .
+eq Behavior(U)  = U | < connect , token ( no-seq , before , em ) > .
+eq Behavior(C)  = C | < sense , token ( no-seq , before , em ) > .
+
+endm
