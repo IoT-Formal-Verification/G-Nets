@@ -1,0 +1,11 @@
+--- Rewriting
+rew in U : U | < connect , token ( no-seq , before , em ) > .
+
+--- search
+search in U : U | < connect , token ( no-seq , before , em ) >  =>* U | < failed , t:Token > .
+search in C : C | < sense   , token ( no-seq , before , em ) >  =>* C | < endSense,token(no-seq,after,msg:MsgSet)  > 
+                                                                such that msg:MsgSet == (v = "Video") ; (r = "notif") .
+
+--- LTL model-checking
+Property 1.              red modelCheck( Behavior(U) , <> (Disconnected(U) \/ Failed(U)) ) .
+Property 2.              red modelCheck( Behavior(C) , <> EndSense(C) ) .
