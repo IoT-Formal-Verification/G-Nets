@@ -3,5 +3,6 @@ Description ... ...
 ## Actuator
 ![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/da8e440cf866ef894bf5353d661b93fa1227b51c/Case%20study/G-Nets%20specifications/Actuator.jpeg)
 ## Camera (sensor)
+![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/32919f158c077fae7e46a974c857268dc65db76d/Case%20study/G-Nets%20specifications/Camera%20(sensor).jpeg)
 ## User (Android app)
 ## Cloud service
