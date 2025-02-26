@@ -1,1 +1,57 @@
+--- % ---------------------------------------------------------------------------------------------
+--- % The GNETS-MsgSet module
+--- % ---------------------------------------------------------------------------------------------
+mod GNETS-MSG is
+  including GNETS-SYNTAX .
 
+  op em : -> MsgSet .  --- empty MsgSet
+  --- `(_=_`) : use to associate a value to their variable
+  op `(_=_`)      : Variable Value -> MsgSet [prec 20] . --- Msg of a variable (For properties and parameters)
+  op _;_ : MsgSet MsgSet -> MsgSet [assoc id: em prec 30] .
+
+  --- The next operators are used to add or update the SEs of the:
+  op _`[_/_`]  : MsgSet Value Variable -> MsgSet [prec 35] .  --- variable
+  op _`[_/_`]  : MsgSet VaList VarList -> MsgSet [prec 35] .  --- list of variable
+
+  --- _`(_`) : returns a value (or a list) of the variable (or a list)
+  op _`(_`) : MsgSet Variable -> Value . 
+  op _`(_`) : MsgSet VarList  -> VaList .
+ 
+  --- _`{_`} : returns a MsgSet of the variable list( ArcMsg)
+  op _`{_`} : VarList MsgSet -> MsgSet .
+
+  --- The next part of the module represents the implementation of the operations defined above.  
+  op remove : MsgSet Variable -> MsgSet . 
+
+  var v : Value .
+  var nl : VaList . vars ms ms' : MsgSet .
+  var xl : VarList . vars x x' : Variable .
+
+  --- --------------------------------------------------------------------------------------------------------
+  eq ms [v / x] = remove(ms, x) ; ( x = v ) .
+  eq remove(em, x) = em .
+  --- ceq remove((x = v) ; ms, x') = ms if x == x' .
+  --- ceq remove((x = v) ; ms, x') = (x = v) ; remove(ms,x') if x =/= x' .
+  eq remove (( x = v ) ; ms, x) = ms .
+  eq remove((x = v) ; ms, x') = (x = v) ; remove(ms,x') [owise] .
+
+  --- -----------------------------------------------------------
+  eq ms [v, nl / x, xl] = (ms[v / x]) [nl / xl] .
+  eq ms [emptyVarList / emptyVaList] = ms .
+
+  --- -----------------------------------------------------------
+  --- ceq ( ( x = v ) ; ms)(x') = v if x == x' .
+  --- ceq ( ( x = v ) ; ms)(x') = ms(x') if x =/= x' .
+  eq ( ( x = v ) ; ms)(x) = v .
+  eq ( ( x = v ) ; ms)(x') = ms(x') [owise] .
+
+  --- -----------------------------------------------------------
+  eq ms(emptyVarList) = emptyVaList .
+  eq ms(x , xl) = ( (ms(x)) , (ms(xl))) .
+
+  --- -----------------------------------------------------------
+  eq x{(ms ; ( x = v ) ; ms')} = ( x = v )  .
+  eq emptyVarList{ms} = em .
+  eq (x ,xl){ms}                    = (x{ms}) ; (xl{ms}) [owise] .
+
+endm
