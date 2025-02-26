@@ -1,1 +1,62 @@
+--- % --------------------------------------------------------------------------------------------------------------
+--- % 
+--- % --------------------------------------------------------------------------------------------------------------
 
+mod U is
+  pr CS .
+  pr A .
+  
+  ops connect pw selectOp            : -> NP  .
+  ops failed disconnect              : -> GP  .
+  ops isp4 isp5 isp6  isp7 isp8 isp9 : -> ISP .   
+  op  p                              : -> Var .       
+  ops Connect                        : -> MethodName .
+  op  U                              : -> GNetName   .            
+  ops t8 t9 t10 t11 t12 t13 t14 t15 t16 t17 t18 t19  : -> TransitionName .
+
+  eq Gsp(U) = { [ (Connect :{[noAtt](connect)(failed , disconnect)}) ]  
+                  < U : GNet | places: < connect             | action: noAction > < pw                  | action: p := "PW" >
+                                       < failed              | action: noAction > < selectOp            | action: noAction >
+                                       < isp4 (Cs , Login )  | action: noAction > < isp5 (Cs , DispOp ) | action: noAction >
+                                       < isp6 (Cs , Monitor) | action: noAction > < isp7 (Cs , Logout ) | action: noAction >
+                                       < isp8 (Cs , SNotif)  | action: noAction > < isp9 (A , Off )     | action: noAction > 
+                                       < disconnect          | action: noAction > , 
+                          transitions: < t8 | input:  (connect if true)  , 
+                                              output: (pw ins: i) , 
+                                              action: i := 0  >
+                                       < t9 | input:  (pw if true)  , 
+                                              output: (isp4 ins: (p , i) ) , 
+                                              action: noAction  >
+                                       < t10 | input:  (isp4 if (c .= "false" And i .< 3 ))  , 
+                                               output: (pw ins: i ), 
+                                               action: noAction  >
+                                       < t11 | input:  (isp4 if (c .= "false" And i .>= 3 ))  , 
+                                               output: (failed ins: noAtt) , 
+                                               action: noAction  >
+                                       < t12 | input:  (isp4 if (c .= "true"))  , 
+                                               output: (isp5 ins: noAtt) , 
+                                               action: noAction  > 
+                                       < t13 | input:  (isp5 if true)  , 
+                                               output: (selectOp ins: noAtt ) , 
+                                              action: noAction  >
+                                       < t14 | input:  (selectOp if true)  , 
+                                              output: (isp6 ins: noAtt) , 
+                                              action: noAction  >
+                                       < t15 | input:  (selectOp if true)  , 
+                                               output: (isp8 ins: noAtt) , 
+                                               action: noAction  >
+                                       < t16 | input:  (isp6 if true)  , 
+                                               output: (isp7 ins: noAtt) , 
+                                               action: noAction  >
+                                       < t17 | input:  (isp7 if true)  , 
+                                               output: (disconnect ins: c) , 
+                                               action: noAction  >
+                                       < t18 | input:  (isp8 if true)  , 
+                                               output: (isp9 ins: noAtt ) , 
+                                               action: noAction  >
+                                       < t19 | input:  (isp9 if true)  , 
+                                               output: (isp7 ins: noAtt) , 
+                                               action: noAction  >                               
+                  > } . 
+
+endm
