@@ -1,1 +1,27 @@
+--- % -------------------------------------------------------------------------------------------
+--- % The GNETS-ACTION-SEMANTICS module implements the evaluation semantics for actions 
+--- % -------------------------------------------------------------------------------------------
+mod GNETS-ACTION-SEMANTICS is
+including GNETS-EXP-EVALUATION .
+   
+   var x     : Variable .  var v            : Value  .
+   var e     : Exp      .  var be           : BExp   .
+   var xl    : VarList  .  var vl           : VaList .
+   vars A A' : Action   .  vars ms ms' ms'' : MsgSet . 
 
+   --- % Evaluation semantics for actions
+   crl [Eff-R1]  :  < x := e, ms  >    => ms[v / x]   if < e, ms  >            => v   .  
+   crl [Eff-R2]  :  < x := be, ms >    => ms[v / x]   if < be, ms >            => v   .   
+   crl [Dec]     :  < x -- , ms   >    => ms'         if < x := x .- 1 , ms >  => ms' . 
+   crl [Inc]     :  < x ++ , ms   >    => ms'         if < x := x .+ 1 , ms >  => ms' .
+   crl [Act]     :  < A ; A', ms >     => < A', ms' > if < A , ms >            => ms' . 
+ 
+   rl  [noAction]    :  < noAction , ms > => ms .
+   crl [If-Then-R1]  :  < If be Then A Else A', ms >   => ms'  if < be, ms >  => true  /\  < A, ms  >  => ms' .
+   crl [If-Then-R2]  :  < If be Then A Else A', ms >   => ms'  if < be, ms >  => false /\  < A', ms >  => ms' .
+   crl [If-R1]       :  < If be Then A , ms >          => ms'  if < be, ms >  => true  /\  < A, ms  >  => ms' .
+   crl [If-R2]       :  < If be Then A , ms >          => ms   if < be, ms >  => false .
+   crl [Whil-R1]     :  < While be Do A, ms >          => ms   if < be, ms >  => false .
+   crl [Whil-R2]     :  < While be Do A, ms >          => ms'  if < be, ms >  => true  /\ < A ; (While be Do A), ms >  => ms' .
+ 
+endm 
