@@ -1,1 +1,94 @@
+--- % --------------------------------------------------------------------------------------------
+--- % GNETS Syntax
+--- % --------------------------------------------------------------------------------------------
+mod GNETS-SYNTAX is
+  including GNETS-EXP-SYNTAX .
+  including CONFIGURATION .
 
+  --- Internal structure (IS)
+  sorts GNetName GSP IS .
+  op GNet : -> Cid .       --- Declaration of the GNet class
+  subsort IS < Object .
+  subsort GNetName < Oid .      --- Oid : Object identifiers 
+  op places:_ : Configuration -> Attribute [ctor gather (&)] .
+  op transitions:_ : Configuration -> Attribute [ctor gather (&)] .
+  op Gsp`(_`) : GNetName -> GSP .
+  op `{`[_`]_`} : MethodList Object -> GSP .
+
+  --- Places 
+  sorts PlaceName GP NP ISP Place PlaceList .
+  subsort GP NP ISP < PlaceName .
+  subsorts PlaceName < PlaceList .    
+  op noPlace : -> PlaceList [ctor] .
+  op _,_ : PlaceList PlaceList -> PlaceList [comm assoc id: noPlace prec 30] .
+  --- subsort Place < Object .
+  op <_| action:_> : GP Action -> Object [ctor] .
+  op <_| action:_> : NP Action -> Object [ctor] .
+  op <_`(_,_`)| action:_> : ISP GNetName MethodName Action -> Object [ctor] .
+
+  --- Transitions 
+  sorts Transition TransitionName TransitionList .
+  subsort Transition < TransitionList .
+  --- subsort Transition < Object .
+  op noTransition : -> TransitionList [ctor].
+  op _,_ : TransitionList TransitionList -> TransitionList [comm assoc id: noTransition prec 30] . 
+  op <_| input:_`,output:_`,action:_> : TransitionName ArcList ArcList Action -> Object [ctor] .
+  op _-->`[_`]-->_if_action:_ : PlaceList TransitionName PlaceList BExp Action -> Transition [ctor] .
+
+  --- Arcs
+  sorts Arc ArcList .
+  subsort  Arc < ArcList .
+  op noArc : -> Arc [ctor] .
+  op _if_ : PlaceName BExp -> Arc [ctor prec 50] . 
+  op _if_ins:_ : PlaceName BExp VarList -> Arc [ctor prec 50] .
+  op _ins:_ : PlaceName VarList -> Arc [ctor prec 50] .
+  op _;_ : ArcList ArcList -> ArcList [comm assoc id: noArc prec 40] . 
+ 
+  --- Token
+  sorts Token MsgSet .
+  op token`(_,_,_`) : SeqList SColor MsgSet -> Token . --- Token List 
+
+  --- Sequence 
+  sorts Seq Seq-Omega NSeqList SeqList .
+  subsort NSeqList Seq-Omega < SeqList .
+  subsort Seq < NSeqList .
+  op no-seq : ->  Seq .
+  op `(_,_`) : GNetName ISP -> Seq [ctor] .   --- Pid      --- Processus
+  op Omega`[_`] : NSeqList  -> Seq-Omega .
+  op omega      :           -> Seq-Omega .
+  op __ : NSeqList NSeqList -> NSeqList [assoc id: no-seq prec 30] .
+  
+
+  --- Statut Color
+  sort SColor .
+  op before : -> SColor .
+  op after  : -> SColor .   
+
+  --- Marking
+  sort Marking .
+  op empty : -> Marking .
+  op <_,_> : PlaceName Token -> Marking [ctor] .
+  op __ : Marking Marking -> Marking [assoc comm id: empty prec 30] .
+
+  --- Config --System
+  sorts Config .
+  op none-config : -> Config .
+  op _|_ : GNetName Marking -> Config [ctor] .
+  op `(_`)`(_`) : Config Config -> Config [assoc comm id: none-config prec 30] . 
+
+  --- Comment ............
+  sort ResultCheck .
+  op _,_ : ArcList Action -> ResultCheck .
+
+  --- Comment ................
+   sort ResultInvoked .
+  op `(_,_`) : GNetName MethodName -> ResultInvoked .
+
+  --- Comment ............
+  sorts MethodName Method MethodList .
+  subsort Method < MethodList .
+  op noMethod : -> Method .
+  op _;_ : Method Method -> MethodList [comm assoc id: noMethod prec 30] .
+  op _:`{`[_`]`(_`)`(_`)`} : MethodName VarList PlaceList PlaceList -> Method .
+ 
+endm
