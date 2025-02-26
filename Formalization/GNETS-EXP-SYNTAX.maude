@@ -1,1 +1,74 @@
+--- % --------------------------------------------------------------------------------------------
+--- % GNETS Expression Syntax
+--- % -------------------------------------------------------------------------------------------- 
+fmod GNETS-EXP-SYNTAX is
+  including GNETS-CONVERSION .
+ 
+  sorts Exp BExp Var BVar Op BOp ROp ExpList VaList VarList  Value Variable .
 
+  subsorts Bool Int Nat FLoat STring < Value .
+  subsorts Var BVar < Variable .
+   
+  subsort Var < Exp .                   
+  subsorts Int Nat FLoat STring < Exp .  
+ 
+  subsort BVar < BExp .                   
+  subsort Bool   < BExp .    
+               
+  --- List of expressions
+  subsort Exp BExp < ExpList .
+  op emptyExpList : -> ExpList .
+  op _,_ : ExpList ExpList -> ExpList [assoc prec 30] .
+
+  --- List of values
+  subsort Value < VaList .  
+  op emptyVaList : -> VaList .
+  op _,_ : VaList VaList -> VaList [assoc prec 30] .  
+  subsort VaList < ExpList .
+
+  --- List of variables                 
+  subsort Variable < VarList .
+  op emptyVarList : -> VarList .
+  op _,_ : VarList VarList -> VarList [assoc prec 30] .  
+  subsort VarList < ExpList .
+  
+  --- These operators are used by the function Ap
+  ops .+ .*  .- ./ .rem : -> Op .
+  ops .= .!= .< .> .<= .>= : -> ROp .
+  ops And Or : -> BOp .
+
+  --- "And", "Or", and "not" operations corresponding to the "and" and "or" operations of BOOL module
+  --- They keep the same properties
+  op _And_     : BExp BExp -> BExp [ctor assoc comm prec 55] . 
+  op _Or_      : BExp BExp -> BExp [ctor assoc comm prec 59] . 
+  op Not_      : BExp -> BExp [ctor prec 53] .
+
+  --- New arithmetic operators corresponding to Maude’s predefined operators (with the same properties)
+  op .-_        : Exp  -> Exp    [ctor prec 53] . 
+  op _.+_       : Exp Exp -> Exp [ctor gather (E e) prec 33] . 
+  op _.-_       : Exp Exp -> Exp [ctor gather (E e) prec 33] . 
+  op _.*_       : Exp Exp -> Exp [ctor gather (E e) prec 31] .  
+  op _./_       : Exp Exp -> Exp [ctor gather (E e) prec 31] . 
+  op _.rem_     : Exp Exp -> Exp [ctor gather (E e) prec 31] .
+
+  --- New  relational operators corresponding to Maude’s predefined operators (with the same properties)
+  op _.=_       : Exp Exp -> BExp [ctor prec 51 poly (1 2)] .
+  op _.!=_      : Exp Exp -> BExp [ctor prec 51 poly (1 2)] .
+  op _.<_       : Exp Exp -> BExp [ctor prec 37] . 
+  op _.>_       : Exp Exp -> BExp [ctor prec 37] .  
+  op _.<=_      : Exp Exp -> BExp [ctor prec 37] . 
+  op _.>=_      : Exp Exp -> BExp [ctor prec 37] . 
+
+  --- Actions
+  sorts Action BlockAction . 
+  op _:=_ : Var Exp -> Action [prec 37] .  
+  op _:=_ : BVar BExp -> Action [ditto ] .
+  op noAction : -> Action .
+  op _;_ : Action Action -> Action [assoc prec 40 ] .
+  op If_Then_Else_ : BExp Action Action -> Action [prec 50] .
+  op If_Then_ : BExp Action -> Action [prec 50] .
+  op While_Do_ : BExp Action -> Action [prec 60] .
+  op _++           : Var -> Action [prec 39] .
+  op _--           : Var -> Action [prec 39] .  
+
+endfm
