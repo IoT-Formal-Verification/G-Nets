@@ -5,4 +5,5 @@ Description ... ...
 ## Camera (sensor)
 ![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/32919f158c077fae7e46a974c857268dc65db76d/Case%20study/G-Nets%20specifications/Camera%20(sensor).jpeg)
 ## User (Android app)
+![model](https://github.com/IoT-Formal-Verification/G-Nets/blob/72f319f3efe534b3ecc85d13df76a461896ddd1d/Case%20study/G-Nets%20specifications/User.jpeg)
 ## Cloud service
