@@ -1,1 +1,56 @@
+--- % ---------------------------------------------------------------------------------------
+--- % The module GNETS-EXP-EVALUATION implements the evaluation semantics for expressions 
+--- % ---------------------------------------------------------------------------------------
+mod GNETS-EXP-EVALUATION is
+including GNETS-MSG .
+including GNETS-AP .
 
+   sorts Statement . 
+   subsorts Bool Int Nat FLoat STring < Statement .
+   subsort MsgSet < Statement .
+
+   op <_,_> : Action MsgSet -> Statement .
+   op <_,_> : Exp MsgSet -> Statement .
+   op <_,_> : BExp MsgSet -> Statement [ditto] . 
+
+   var ms : MsgSet .
+   var x : Variable  .    var bx      : BVar .
+   vars e e' : Exp   .    vars be be' : BExp .
+   vars v v' : Value .    vars bv bv' : Bool .
+   var xl : VarList  .
+
+   --- % Value evaluation rule (for all value types = Bool Int Nat Float String)
+   rl [Value]    : < v, ms >      =>  v .
+
+   --- % Variable evaluation rule (for all variable types = Bool Int Nat Float String)
+   rl [Variable] : < x, ms >      =>  ms(x) .
+
+   --- % Evaluation rule of variable list
+   rl [VarList]  : < xl, ms >     =>  ms(xl) .
+
+   --- % Evaluation rules for arithmetic operations ( + , - , * , / and rem )
+   crl [Add]    : < e .+ e', ms >   =>  Ap(.+,v,v')   if < e, ms >  =>  v /\ < e', ms >  => v' .
+   crl [Min]    : < e .- e', ms >   =>  Ap(.-,v,v')   if < e, ms >  =>  v /\ < e', ms >  => v' .
+   crl [Mul]    : < e .* e', ms >   =>  Ap(.*,v,v')   if < e, ms >  =>  v /\ < e', ms >  => v' .
+   crl [Div]    : < e ./ e', ms >   =>  Ap(./,v,v')   if < e, ms >  =>  v /\ < e', ms >  => v' .
+   crl [Rem]    : < e .rem e', ms > =>  Ap(.rem,v,v') if < e, ms >  =>  v /\ < e', ms >  => v' . 
+   
+   --- % Evaluation rule for the - (unary minus) operator
+   crl [UMinus-R1] : < .- e , ms >    =>  - v if < e, ms >    =>  v /\ (v :: Int   ) .
+   crl [UMinus-R2] : < .- e , ms >    =>  -F v if < e, ms >   =>  v /\ (v :: FLoat ) .
+
+   --- % Evaluation rules for relational operations ( ==, !=, <, >, <=, >=)
+   crl [Equ]     : < e .= e', ms  > => Ap(.=,v,v' ) if < e, ms >    => v /\ < e', ms >  => v' .
+   crl [NEq]     : < e .!= e', ms > => Ap(.!=,v,v') if < e, ms >    => v /\ < e', ms >  => v' .
+   crl [Low]     : < e .< e', ms  > => Ap(.<,v,v' ) if < e, ms >    => v /\ < e', ms >  => v' .
+   crl [Gre]     : < e .> e', ms  > => Ap(.>,v,v' ) if < e, ms >    => v /\ < e', ms >  => v' .
+   crl [LEq]     : < e .<= e', ms > => Ap(.<=,v,v') if < e, ms >    => v /\ < e', ms >  => v' .
+   crl [GEq]     : < e .>= e', ms > => Ap(.>=,v,v') if < e, ms >    => v /\ < e', ms >  => v' .
+
+   --- % Evaluation rules for boolean operations ( and, or, not, ==, !=) 
+   crl [And]     : < be And be', ms >  => Ap(And , bv , bv') if < be, ms >  => bv /\ < be', ms >  => bv' .
+   crl [Or]      : < be Or be', ms  >  => Ap(Or , bv , bv' ) if < be, ms >  => bv /\ < be', ms >  => bv' .
+   crl [EquB]    : < be .= be', ms  >  => Ap(.= , bv , bv' ) if < be, ms >  => bv /\ < be', ms >  => bv' .
+   crl [NEquB]   : < be .!= be', ms >  => Ap(.!= , bv , bv') if < be, ms >  => bv /\ < be', ms >  => bv' .
+   crl [Not]     : < Not be, ms     >  => not bv             if < be, ms >  => bv . 
+endm
