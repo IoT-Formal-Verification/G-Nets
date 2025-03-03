@@ -49,15 +49,11 @@ mod GNETS-SYNTAX is
   op token`(_,_,_`) : SeqList SColor MsgSet -> Token . --- Token List 
 
   --- Sequence 
-  sorts Seq Seq-Omega NSeqList SeqList .
-  subsort NSeqList Seq-Omega < SeqList .
-  subsort Seq < NSeqList .
-  op no-seq : ->  Seq .
+  sorts Seq SeqList .
+  subsort Seq < SeqList .
   op `(_,_`) : GNetName ISP -> Seq [ctor] .   --- Pid      --- Processus
-  op Omega`[_`] : NSeqList  -> Seq-Omega .
-  op omega      :           -> Seq-Omega .
-  op __ : NSeqList NSeqList -> NSeqList [assoc id: no-seq prec 30] .
-  
+  op no-seq : ->  SeqList .
+  op __ : SeqList SeqList -> SeqList [assoc id: no-seq prec 30] .
 
   --- Statut Color
   sort SColor .
@@ -88,7 +84,7 @@ mod GNETS-SYNTAX is
   sorts MethodName Method MethodList .
   subsort Method < MethodList .
   op noMethod : -> Method .
-  op _;_ : Method Method -> MethodList [comm assoc id: noMethod prec 30] .
+  op _;_ : MethodList MethodList -> MethodList [comm assoc id: noMethod prec 30] .
   op _:`{`[_`]`(_`)`(_`)`} : MethodName VarList PlaceList PlaceList -> Method .
  
 endm
