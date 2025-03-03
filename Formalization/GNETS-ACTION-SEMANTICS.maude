@@ -23,5 +23,4 @@ including GNETS-EXP-EVALUATION .
    crl [If-R2]       :  < If be Then A , ms >          => ms   if < be, ms >  => false .
    crl [Whil-R1]     :  < While be Do A, ms >          => ms   if < be, ms >  => false .
    crl [Whil-R2]     :  < While be Do A, ms >          => ms'  if < be, ms >  => true  /\ < A ; (While be Do A), ms >  => ms' .
- 
 endm 
