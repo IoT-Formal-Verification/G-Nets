@@ -1,9 +1,9 @@
 
 
---- % ---------------------------------------------------------------------------
---- % Predefined modules
---- % We have commented on the _xor_ operator these modules.
---- % --------------------------------------------------------------------------
+--- % -------------------------------------------------------------------------------
+--- %  Predefined modules
+--- %  We have commented on the _xor_ operator these modules.
+--- % -------------------------------------------------------------------------------
 fmod NAT is
   protecting BOOL .
   sorts Zero NzNat Nat .
