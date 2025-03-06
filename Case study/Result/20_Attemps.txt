@@ -1,0 +1,22 @@
+==================================================================================================
+=== Search
+==================================================================================================
+search in U : U | < connect, token(no-seq, before, em) > =>* U | < failed,  t:Token > .
+
+Solution 1 (state 80815)
+states: 80816  rewrites: 2658651 in 1588ms cpu (1589ms real) (1674213   rewrites/second)
+t:Token --> token(no-seq, before, em)
+
+Solution 2 (state 80910)
+states: 80911  rewrites: 2660955 in 1592ms cpu (1590ms real) (1671454   rewrites/second)
+t:Token --> token(no-seq, after, em)
+
+No more solutions.
+states: 81701  rewrites: 2679981 in 1600ms cpu (1600ms real) (1674988   rewrites/second)
+
+==================================================================================================
+=== Model checking
+==================================================================================================
+reduce in HOME-CAMERA-PREDS : modelCheck(Behavior(U), <> (Disconnected(U) \/  Failed(U))) .
+rewrites: 2679983 in 1876ms cpu (1878ms real) (1428562 rewrites/second)
+result Bool: true
