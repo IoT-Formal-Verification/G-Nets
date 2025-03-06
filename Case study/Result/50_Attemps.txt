@@ -17,6 +17,6 @@ states: 878851  rewrites: 31649696 in 22008ms cpu (22006ms real) (1438099  rewri
 ==================================================================================================
 === Model checking
 ==================================================================================================
-rreduce in HOME-CAMERA-PREDS : modelCheck(Behavior(U), <> (Disconnected(U) \/ Failed(U))) .
+reduce in HOME-CAMERA-PREDS : modelCheck(Behavior(U), <> (Disconnected(U) \/ Failed(U))) .
 rewrites: 31649698 in 25712ms cpu (25711ms real) (1230931 rewrites/second)
 result Bool: true
